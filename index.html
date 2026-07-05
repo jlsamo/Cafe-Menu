@@ -230,8 +230,18 @@
     margin-bottom: 12px;
     position: relative;
   }
+  .drink-edit-header{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom: 8px;
+  }
+  .reorder-btns{ display:flex; gap:2px; }
+  .reorder-btns button{
+    background:none; border:none; color: var(--muted);
+    cursor:pointer; font-size:0.75rem; padding:4px 6px; line-height:1;
+  }
+  .reorder-btns button:hover:not(:disabled){ color: var(--ink); }
+  .reorder-btns button:disabled{ opacity:0.25; cursor:default; }
   .remove-x{
-    position:absolute; top:10px; right:10px;
     background:none; border:none; color: var(--muted);
     cursor:pointer; font-size:1rem;
   }
@@ -598,7 +608,13 @@ function renderDrinkEditList(containerId, list){
     const el = document.createElement('div');
     el.className = 'drink-edit';
     el.innerHTML = `
-      <button class="remove-x" data-i="${i}">&times;</button>
+      <div class="drink-edit-header">
+        <div class="reorder-btns">
+          <button class="move-up" data-i="${i}" ${i === 0 ? 'disabled' : ''} title="Move up">&#9650;</button>
+          <button class="move-down" data-i="${i}" ${i === list.length - 1 ? 'disabled' : ''} title="Move down">&#9660;</button>
+        </div>
+        <button class="remove-x" data-i="${i}">&times;</button>
+      </div>
       <div class="drink-toggle">
         <input type="checkbox" data-field="available" data-i="${i}" ${d.available ? 'checked' : ''}>
         <label style="margin:0;text-transform:none;font-size:0.85rem;">Available today</label>
@@ -625,6 +641,24 @@ function renderDrinkEditList(containerId, list){
       const i = +e.target.dataset.i;
       list.splice(i,1);
       renderDrinkEditList(containerId, list);
+    });
+  });
+  wrap.querySelectorAll('.move-up').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      const i = +e.target.dataset.i;
+      if(i > 0){
+        [list[i-1], list[i]] = [list[i], list[i-1]];
+        renderDrinkEditList(containerId, list);
+      }
+    });
+  });
+  wrap.querySelectorAll('.move-down').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      const i = +e.target.dataset.i;
+      if(i < list.length - 1){
+        [list[i], list[i+1]] = [list[i+1], list[i]];
+        renderDrinkEditList(containerId, list);
+      }
     });
   });
 }
