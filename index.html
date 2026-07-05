@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Samo Espresso Bar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root{
+    --bg: #fcf3e2;
+    --surface: #ffffff;
+    --surface-2: #fbeed6;
+    --ink: #2c2118;
+    --muted: #9c8a76;
+    --coral: #e85f47;
+    --coral-tint: #fbe4dd;
+    --marigold: #f0a93e;
+    --marigold-tint: #fce7bf;
+    --sage: #5f7a4e;
+    --sage-tint: #e6ecdd;
+    --rule: rgba(44,33,24,0.10);
+    --danger: #c1402a;
+    --radius: 14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  .wrap{
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 48px 22px 120px;
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .fade-in{ animation: fadeIn .6s ease both; }
+    .fade-in:nth-child(2){ animation-delay: .05s; }
+  }
+  @keyframes fadeIn{ from{ opacity:0; transform: translateY(6px);} to{opacity:1; transform:none;} }
+
+  header{ text-align:center; margin-bottom: 42px; }
+  .wordmark{
+    font-family:'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(2.4rem, 9vw, 3.4rem);
+    letter-spacing: -0.02em;
+    margin: 0;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .tagline{
+    margin-top: 10px;
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--coral);
+    font-weight: 600;
+  }
+  .divider{
+    display:flex; align-items:center; gap:14px;
+    margin: 40px 0 18px;
+  }
+  .divider::before, .divider::after{
+    content:""; flex:1; height:1px; background: var(--rule);
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .eyebrow.c-marigold{ color: #b57619; }
+  .eyebrow.c-coral{ color: var(--coral); }
+  .eyebrow.c-sage{ color: var(--sage); }
+
+  /* Ticket-style bean card */
+  .ticket{
+    background: var(--marigold-tint);
+    border-radius: var(--radius) var(--radius) 0 0;
+    padding: 20px 22px 18px;
+    position: relative;
+  }
+  .ticket-edge{
+    height: 13px;
+    background-image: radial-gradient(circle at 10px 6px, var(--bg) 6.5px, var(--marigold-tint) 6.5px);
+    background-size: 20px 13px;
+    background-repeat: repeat-x;
+    margin-bottom: 4px;
+  }
+  .bean-roaster{
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #96692b;
+    font-weight: 600;
+  }
+  .bean-name{
+    font-family:'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.5rem;
+    margin: 3px 0 8px;
+    color: var(--ink);
+  }
+  .bean-meta{
+    font-family:'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: #96692b;
+    margin-bottom: 8px;
+  }
+  .bean-notes{
+    font-size: 0.9rem;
+    color: #5c4a34;
+    line-height: 1.5;
+  }
+
+  /* Specialties card wrap */
+  .specialty-card{
+    background: var(--coral-tint);
+    border-left: 3px solid var(--coral);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 6px 20px;
+  }
+
+  /* Drinks */
+  .drink-row{
+    display:flex; justify-content:space-between; align-items:baseline;
+    gap: 16px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .specialty-card .drink-row{ border-bottom-color: rgba(232,95,71,0.18); }
+  .drink-row:last-child{ border-bottom:none; }
+  .drink-name{ font-weight: 700; font-size: 1rem; color: var(--ink); }
+  .drink-desc{ color: var(--muted); font-size: 0.85rem; margin-top: 2px; }
+
+  /* Chips */
+  .chip-group{ margin-bottom: 22px; }
+  .chip-label{ font-size:0.78rem; color:var(--muted); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.08em; font-weight:600;}
+  .chips{ display:flex; flex-wrap:wrap; gap:9px; }
+  .chip{
+    font-size: 0.85rem;
+    padding: 7px 14px;
+    border-radius: 999px;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .chip.milk{ background: var(--sage-tint); }
+  .chip.syrup{ background: var(--marigold-tint); }
+
+  footer{
+    text-align:center;
+    margin-top: 60px;
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+
+  /* Settings trigger */
+  .gear{
+    position: fixed;
+    bottom: 20px; right: 20px;
+    width: 46px; height:46px;
+    border-radius: 50%;
+    background: var(--ink);
+    border: none;
+    color: var(--bg);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    font-size: 1.2rem;
+    z-index: 40;
+    box-shadow: 0 4px 14px rgba(44,33,24,0.25);
+  }
+  .gear:hover{ background: var(--coral); }
+
+  /* Drawer */
+  .overlay{
+    position: fixed; inset:0; background: rgba(44,33,24,0.5);
+    display:none; align-items:flex-end; justify-content:center;
+    z-index: 50;
+  }
+  .overlay.open{ display:flex; }
+  .drawer{
+    background: var(--bg);
+    width:100%; max-width: 620px;
+    max-height: 88vh;
+    overflow-y:auto;
+    border-radius: 20px 20px 0 0;
+    padding: 24px 22px 32px;
+    color: var(--ink);
+  }
+  .drawer h2{
+    font-family:'Fraunces', serif; font-weight:600; font-size:1.4rem; margin:0 0 4px;
+  }
+  .drawer .sub{ color:var(--muted); font-size:0.85rem; margin-bottom:20px; }
+  .field{ margin-bottom: 16px; }
+  .field label{
+    display:block; font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em;
+    color: var(--muted); margin-bottom:6px; font-weight:600;
+  }
+  .field input, .field textarea{
+    width:100%;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    color: var(--ink);
+    padding: 10px 12px;
+    font-family:'Inter', sans-serif;
+    font-size: 0.92rem;
+  }
+  .field textarea{ resize:vertical; min-height:60px; }
+  .row-inline{ display:flex; gap:10px; }
+  .row-inline > *{ flex:1; }
+  .bean-edit-box, .drink-edit{
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .remove-x{
+    position:absolute; top:10px; right:10px;
+    background:none; border:none; color: var(--muted);
+    cursor:pointer; font-size:1rem;
+  }
+  .remove-x:hover{ color: var(--danger); }
+  .btn{
+    font-family:'Inter', sans-serif;
+    font-weight:700;
+    font-size: 0.88rem;
+    padding: 11px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-primary{ background: var(--coral); color:#fff; }
+  .btn-ghost{ background: transparent; color: var(--ink); border:1px solid var(--rule); }
+  .btn-add{ background: var(--surface); color: #b57619; border:1px dashed var(--rule); width:100%; padding:10px; margin-top:4px; font-weight:600; }
+  .btn-row{ display:flex; gap:10px; margin-top: 22px; }
+  .btn-row .btn{ flex:1; }
+  .drink-toggle{ display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+  .drink-toggle input{ width:auto; }
+  .section-title{
+    font-family:'IBM Plex Mono', monospace; font-size:0.72rem; text-transform:uppercase;
+    letter-spacing:0.12em; color: #b57619; margin: 26px 0 12px; font-weight:600;
+  }
+  .section-title:first-of-type{ margin-top:0; }
+  .qr-box{ text-align:center; margin-top:12px; }
+  #qr-render{ display:inline-block; background:#fff; padding:12px; border-radius:10px; margin-top:12px; border:1px solid var(--rule); }
+  .pin-gate{ text-align:center; padding: 30px 10px; }
+  .pin-gate input{ text-align:center; letter-spacing: 0.4em; font-size:1.3rem; }
+  .hint{ font-size:0.78rem; color:var(--muted); margin-top:14px; line-height:1.5; }
+  .error-text{ color: var(--danger); font-size:0.8rem; margin-top:6px; min-height:1em; }
+</style>
+</head>
+<body>
+
+<div class="wrap" id="menu-root">
+  <header class="fade-in">
+    <p class="wordmark" id="disp-name">Loading…</p>
+    <p class="tagline" id="disp-tagline"></p>
+  </header>
+
+  <div id="bean-section">
+    <div class="divider"><span class="eyebrow c-marigold">On Bar Now</span></div>
+    <div class="ticket" id="bean-card"></div>
+    <div class="ticket-edge"></div>
+  </div>
+
+  <div id="specialties-section">
+    <div class="divider"><span class="eyebrow c-coral">House Specialties</span></div>
+    <div class="specialty-card"><div id="specialties-list"></div></div>
+  </div>
+
+  <div id="classics-section">
+    <div class="divider"><span class="eyebrow c-sage">Classics</span></div>
+    <div id="classics-list"></div>
+  </div>
+
+  <div id="build-section">
+    <div class="divider"><span class="eyebrow" style="color:var(--muted);">Build It Your Way</span></div>
+    <div class="chip-group">
+      <div class="chip-label">Milk</div>
+      <div class="chips" id="milks-list"></div>
+    </div>
+    <div class="chip-group">
+      <div class="chip-label">Syrups &amp; Flavors</div>
+      <div class="chips" id="syrups-list"></div>
+    </div>
+  </div>
+
+  <footer>Made to order — just ask.</footer>
+</div>
+
+<div class="gear" id="gear-btn" title="Edit menu">&#9881;</div>
+
+<div class="overlay" id="overlay">
+  <div class="drawer" id="drawer"></div>
+</div>
+
+<script>
+const JSONBIN_ID = '6a49a4bcda38895dfe2f3b5b';
+const JSONBIN_KEY = '$2a$10$PhI9PVr/AKehVcGZS5c.c.hNTYgK9NWND4RwJrTy8Uc7t0/EtrZOK';
+const JSONBIN_URL = 'https://api.jsonbin.io/v3/b/' + JSONBIN_ID;
+let data = null;
+let editingCopy = null;
+let unlocked = false;
+
+const DEFAULT_DATA = {
+  cafeName: "Samo",
+  tagline: "Home Espresso Bar",
+  bean: {
+    roaster: "PERC Coffee",
+    name: "Darrrk",
+    origin: "Ethiopia Guji",
+    process: "Natural",
+    agtron: "57.6",
+    preset: "Dark",
+    notes: "Heavy & sweet — thick body and deep roasty sweetness, with a blueberry-toned fruit finish from the natural process."
+  },
+  classics: [
+    { name: "Espresso", desc: "A single shot, pulled tight.", available: true },
+    { name: "Doppio", desc: "Double shot, same shot glass energy.", available: true },
+    { name: "Americano", desc: "Espresso and hot water, no drama.", available: true },
+    { name: "Cortado", desc: "Equal parts espresso and steamed milk.", available: true },
+    { name: "Cappuccino", desc: "Espresso, milk, deep foam.", available: true },
+    { name: "Latte", desc: "Espresso, steamed milk, light foam.", available: true },
+    { name: "Flat White", desc: "Ristretto shots and silky microfoam.", available: true },
+    { name: "Macchiato", desc: "Espresso, marked with foam.", available: true },
+    { name: "Mocha", desc: "Espresso, chocolate, steamed milk.", available: true },
+    { name: "Affogato", desc: "A shot poured over vanilla ice cream.", available: true }
+  ],
+  specialties: [
+    { name: "The Reverso", desc: "A doppio finished two ways: espresso first, then a splash of steamed milk and brown sugar stirred through. Flips the script halfway.", available: true }
+  ],
+  milks: ["Whole", "Oat", "Almond", "Half & Half", "Non-Fat"],
+  syrups: ["Vanilla", "Caramel", "Hazelnut", "Cinnamon", "Lavender"],
+  pin: null
+};
+
+function clone(obj){ return JSON.parse(JSON.stringify(obj)); }
+
+async function loadData(){
+  try{
+    const res = await fetch(JSONBIN_URL + '/latest', {
+      cache: 'no-store',
+      headers: {
+        'X-Access-Key': JSONBIN_KEY,
+        'X-Bin-Meta': 'false'
+      }
+    });
+    if(!res.ok) throw new Error('load failed: HTTP ' + res.status);
+    data = await res.json();
+  }catch(e){
+    data = clone(DEFAULT_DATA);
+  }
+  render();
+}
+
+async function saveData(newData){
+  try{
+    const res = await fetch(JSONBIN_URL, {
+      method: 'PUT',
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Access-Key': JSONBIN_KEY
+      },
+      body: JSON.stringify(newData)
+    });
+    if(!res.ok){
+      let detail = '';
+      try{ detail = (await res.text()).slice(0, 200); }catch(e2){}
+      return { ok:false, message: `Save failed — HTTP ${res.status}. ${res.status === 401 || res.status === 403 ? 'Your Access Key may be missing Update permission.' : (res.status === 404 ? 'Bin ID may be wrong.' : detail)}` };
+    }
+    data = newData;
+    render();
+    return { ok:true, message: 'Saved — visible to anyone with the link.' };
+  }catch(e){
+    return { ok:false, message: 'Save failed — network error. Check your connection and try again.' };
+  }
+}
+
+function escapeHtml(str){
+  if(str === undefined || str === null) return '';
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function escapeAttr(str){ return escapeHtml(str); }
+
+function renderDrinkList(container, list){
+  container.innerHTML = '';
+  const available = (list||[]).filter(d=>d.available);
+  available.forEach(d=>{
+    const row = document.createElement('div');
+    row.className = 'drink-row';
+    row.innerHTML = `<div><div class="drink-name">${escapeHtml(d.name)}</div><div class="drink-desc">${escapeHtml(d.desc)}</div></div>`;
+    container.appendChild(row);
+  });
+  return available.length;
+}
+
+function render(){
+  document.getElementById('disp-name').textContent = data.cafeName || 'Untitled Bar';
+  document.getElementById('disp-tagline').textContent = data.tagline || '';
+
+  const b = data.bean || {};
+  const hasBean = b.roaster || b.name;
+  document.getElementById('bean-section').style.display = hasBean ? '' : 'none';
+  if(hasBean){
+    const metaParts = [b.origin, b.process, (b.agtron ? `Agtron ${b.agtron}` : ''), (b.preset ? `${b.preset} roast` : '')].filter(Boolean);
+    document.getElementById('bean-card').innerHTML = `
+      <div class="bean-roaster">${escapeHtml(b.roaster)}</div>
+      <div class="bean-name">${escapeHtml(b.name)}</div>
+      <div class="bean-meta">${escapeHtml(metaParts.join(' · '))}</div>
+      <div class="bean-notes">${escapeHtml(b.notes)}</div>
+    `;
+  }
+
+  const specialtiesCount = renderDrinkList(document.getElementById('specialties-list'), data.specialties);
+  document.getElementById('specialties-section').style.display = specialtiesCount ? '' : 'none';
+
+  const classicsCount = renderDrinkList(document.getElementById('classics-list'), data.classics);
+  document.getElementById('classics-section').style.display = classicsCount ? '' : 'none';
+
+  const milksList = document.getElementById('milks-list');
+  milksList.innerHTML = (data.milks||[]).map(m=>`<span class="chip milk">${escapeHtml(m)}</span>`).join('');
+  const syrupsList = document.getElementById('syrups-list');
+  syrupsList.innerHTML = (data.syrups||[]).map(s=>`<span class="chip syrup">${escapeHtml(s)}</span>`).join('');
+  document.getElementById('build-section').style.display = ((data.milks||[]).length || (data.syrups||[]).length) ? '' : 'none';
+}
+
+/* ---------- Settings drawer ---------- */
+
+const overlay = document.getElementById('overlay');
+const drawer = document.getElementById('drawer');
+
+document.getElementById('gear-btn').addEventListener('click', openSettings);
+overlay.addEventListener('click', (e)=>{ if(e.target === overlay) closeDrawer(); });
+
+function openSettings(){
+  overlay.classList.add('open');
+  if(data.pin && !unlocked){
+    renderPinGate();
+  } else {
+    editingCopy = clone(data);
+    renderEditForm();
+  }
+}
+
+function closeDrawer(){
+  overlay.classList.remove('open');
+}
+
+function renderPinGate(){
+  drawer.innerHTML = `
+    <div class="pin-gate">
+      <h2>Enter PIN</h2>
+      <p class="sub">This menu is PIN-protected for editing.</p>
+      <div class="field"><input type="password" inputmode="numeric" id="pin-input" maxlength="8" placeholder="••••"></div>
+      <div class="error-text" id="pin-error"></div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="pin-cancel">Cancel</button>
+        <button class="btn btn-primary" id="pin-submit">Unlock</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('pin-cancel').onclick = closeDrawer;
+  document.getElementById('pin-submit').onclick = ()=>{
+    const val = document.getElementById('pin-input').value;
+    if(val === data.pin){
+      unlocked = true;
+      editingCopy = clone(data);
+      renderEditForm();
+    } else {
+      document.getElementById('pin-error').textContent = 'Incorrect PIN.';
+    }
+  };
+}
+
+function renderEditForm(){
+  const b = editingCopy.bean || {};
+  drawer.innerHTML = `
+    <h2>Edit menu</h2>
+    <p class="sub">Changes are visible to anyone with the menu link.</p>
+
+    <div class="section-title">Header</div>
+    <div class="field"><label>Name</label><input id="f-name" value="${escapeAttr(editingCopy.cafeName)}"></div>
+    <div class="field"><label>Tagline</label><input id="f-tagline" value="${escapeAttr(editingCopy.tagline)}"></div>
+
+    <div class="section-title">On bar now</div>
+    <div class="bean-edit-box">
+      <div class="row-inline">
+        <div class="field"><label>Roaster</label><input id="f-bean-roaster" value="${escapeAttr(b.roaster)}"></div>
+        <div class="field"><label>Coffee</label><input id="f-bean-name" value="${escapeAttr(b.name)}"></div>
+      </div>
+      <div class="row-inline">
+        <div class="field"><label>Origin</label><input id="f-bean-origin" value="${escapeAttr(b.origin)}"></div>
+        <div class="field"><label>Process</label><input id="f-bean-process" value="${escapeAttr(b.process)}"></div>
+      </div>
+      <div class="row-inline">
+        <div class="field"><label>Agtron</label><input id="f-bean-agtron" value="${escapeAttr(b.agtron)}"></div>
+        <div class="field"><label>Roast preset</label><input id="f-bean-preset" value="${escapeAttr(b.preset)}"></div>
+      </div>
+      <div class="field"><label>Tasting notes</label><textarea id="f-bean-notes">${escapeHtml(b.notes)}</textarea></div>
+    </div>
+
+    <div class="section-title">House Specialties</div>
+    <div id="specialties-edit-list"></div>
+    <button class="btn-add" id="add-specialty">+ Add specialty drink</button>
+
+    <div class="section-title">Classics</div>
+    <div id="classics-edit-list"></div>
+    <button class="btn-add" id="add-classic">+ Add classic drink</button>
+
+    <div class="section-title">Milk</div>
+    <div class="field"><label>Comma-separated list</label><input id="f-milks" value="${escapeAttr((editingCopy.milks||[]).join(', '))}"></div>
+
+    <div class="section-title">Syrups &amp; flavors</div>
+    <div class="field"><label>Comma-separated list</label><input id="f-syrups" value="${escapeAttr((editingCopy.syrups||[]).join(', '))}"></div>
+
+    <div class="section-title">Editor PIN</div>
+    <div class="field"><label>${editingCopy.pin ? 'Change PIN (leave blank to keep current)' : 'Set a PIN (optional — leave blank for no lock)'}</label><input id="f-pin" inputmode="numeric" maxlength="8" placeholder="e.g. 1234"></div>
+
+    <div class="section-title">Get your link on a QR code</div>
+    <p class="hint">Once you've shared or published this menu, paste the link here to generate a scannable code. Use the same code for an NFC tag by writing this link to it with any NFC-writer app.</p>
+    <div class="field"><input id="f-qr-url" placeholder="https://claude.ai/..."></div>
+    <div class="qr-box">
+      <button class="btn btn-ghost" id="gen-qr">Generate QR code</button>
+      <div id="qr-render"></div>
+      <div id="qr-download-wrap"></div>
+    </div>
+
+    <div class="error-text" id="save-status" style="text-align:center;font-size:0.85rem;"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" id="cancel-edit">Cancel</button>
+      <button class="btn btn-primary" id="save-edit">Save changes</button>
+    </div>
+  `;
+
+  renderDrinkEditList('specialties-edit-list', editingCopy.specialties);
+  renderDrinkEditList('classics-edit-list', editingCopy.classics);
+
+  document.getElementById('add-classic').onclick = ()=>{
+    editingCopy.classics.push({name:'', desc:'', available:true});
+    renderDrinkEditList('classics-edit-list', editingCopy.classics);
+  };
+  document.getElementById('add-specialty').onclick = ()=>{
+    editingCopy.specialties.push({name:'', desc:'', available:true});
+    renderDrinkEditList('specialties-edit-list', editingCopy.specialties);
+  };
+  document.getElementById('cancel-edit').onclick = closeDrawer;
+  document.getElementById('save-edit').onclick = onSaveEdit;
+  document.getElementById('gen-qr').onclick = onGenerateQr;
+}
+
+function renderDrinkEditList(containerId, list){
+  const wrap = document.getElementById(containerId);
+  wrap.innerHTML = '';
+  list.forEach((d, i)=>{
+    const el = document.createElement('div');
+    el.className = 'drink-edit';
+    el.innerHTML = `
+      <button class="remove-x" data-i="${i}">&times;</button>
+      <div class="drink-toggle">
+        <input type="checkbox" data-field="available" data-i="${i}" ${d.available ? 'checked' : ''}>
+        <label style="margin:0;text-transform:none;font-size:0.85rem;">Available today</label>
+      </div>
+      <div class="field"><label>Name</label><input data-field="name" data-i="${i}" value="${escapeAttr(d.name)}"></div>
+      <div class="field"><label>Description</label><input data-field="desc" data-i="${i}" value="${escapeAttr(d.desc)}"></div>
+    `;
+    wrap.appendChild(el);
+  });
+  wrap.querySelectorAll('input[type="text"], input:not([type])').forEach(inp=>{
+    inp.addEventListener('input', (e)=>{
+      const i = +e.target.dataset.i;
+      list[i][e.target.dataset.field] = e.target.value;
+    });
+  });
+  wrap.querySelectorAll('input[type="checkbox"]').forEach(inp=>{
+    inp.addEventListener('change', (e)=>{
+      const i = +e.target.dataset.i;
+      list[i].available = e.target.checked;
+    });
+  });
+  wrap.querySelectorAll('.remove-x').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      const i = +e.target.dataset.i;
+      list.splice(i,1);
+      renderDrinkEditList(containerId, list);
+    });
+  });
+}
+
+async function onSaveEdit(){
+  editingCopy.cafeName = document.getElementById('f-name').value.trim() || 'Untitled Bar';
+  editingCopy.tagline = document.getElementById('f-tagline').value.trim();
+  editingCopy.bean = {
+    roaster: document.getElementById('f-bean-roaster').value.trim(),
+    name: document.getElementById('f-bean-name').value.trim(),
+    origin: document.getElementById('f-bean-origin').value.trim(),
+    process: document.getElementById('f-bean-process').value.trim(),
+    agtron: document.getElementById('f-bean-agtron').value.trim(),
+    preset: document.getElementById('f-bean-preset').value.trim(),
+    notes: document.getElementById('f-bean-notes').value.trim()
+  };
+  editingCopy.milks = document.getElementById('f-milks').value.split(',').map(s=>s.trim()).filter(Boolean);
+  editingCopy.syrups = document.getElementById('f-syrups').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const newPin = document.getElementById('f-pin').value.trim();
+  if(newPin){ editingCopy.pin = newPin; }
+  editingCopy.classics = editingCopy.classics.filter(d=> d.name);
+  editingCopy.specialties = editingCopy.specialties.filter(d=> d.name);
+
+  const statusEl = document.getElementById('save-status');
+  const saveBtn = document.getElementById('save-edit');
+  statusEl.style.color = 'var(--muted)';
+  statusEl.textContent = 'Saving…';
+  saveBtn.disabled = true;
+
+  const result = await saveData(clone(editingCopy));
+
+  saveBtn.disabled = false;
+  if(result.ok){
+    statusEl.style.color = 'var(--sage)';
+    statusEl.textContent = result.message;
+    setTimeout(closeDrawer, 1000);
+  } else {
+    statusEl.style.color = 'var(--danger)';
+    statusEl.textContent = result.message;
+  }
+}
+
+function onGenerateQr(){
+  const url = document.getElementById('f-qr-url').value.trim();
+  const renderTarget = document.getElementById('qr-render');
+  const dlWrap = document.getElementById('qr-download-wrap');
+  renderTarget.innerHTML = '';
+  dlWrap.innerHTML = '';
+  if(!url){ return; }
+  try{
+    new QRCode(renderTarget, { text: url, width: 180, height: 180, colorDark: "#2c2118", colorLight: "#ffffff" });
+    setTimeout(()=>{
+      const img = renderTarget.querySelector('img, canvas');
+      if(img){
+        const dlBtn = document.createElement('button');
+        dlBtn.className = 'btn btn-ghost';
+        dlBtn.style.marginTop = '10px';
+        dlBtn.textContent = 'Download QR code';
+        dlBtn.onclick = ()=>{
+          const link = document.createElement('a');
+          link.download = 'menu-qr.png';
+          link.href = img.tagName === 'CANVAS' ? img.toDataURL('image/png') : img.src;
+          link.click();
+        };
+        dlWrap.appendChild(dlBtn);
+      }
+    }, 150);
+  }catch(e){
+    renderTarget.textContent = 'Could not generate QR code.';
+  }
+}
+
+loadData();
+</script>
+</body>
+</html>
