@@ -57,6 +57,7 @@
     margin: 0;
     line-height: 1;
     color: var(--ink);
+    white-space: nowrap;
   }
   .tagline{
     margin-top: 10px;
@@ -440,7 +441,31 @@ function render(){
   const syrupsList = document.getElementById('syrups-list');
   syrupsList.innerHTML = (data.syrups||[]).map(s=>`<span class="chip syrup">${escapeHtml(s)}</span>`).join('');
   document.getElementById('build-section').style.display = ((data.milks||[]).length || (data.syrups||[]).length) ? '' : 'none';
+
+  fitWordmark();
 }
+
+function fitWordmark(){
+  const el = document.getElementById('disp-name');
+  if(!el || !el.textContent) return;
+  const minFontSize = 22;
+  el.style.whiteSpace = 'nowrap';
+  el.style.fontSize = '';
+  let fontSize = parseFloat(getComputedStyle(el).fontSize);
+  while(el.scrollWidth > el.parentElement.clientWidth && fontSize > minFontSize){
+    fontSize -= 1;
+    el.style.fontSize = fontSize + 'px';
+  }
+  if(el.scrollWidth > el.parentElement.clientWidth){
+    el.style.whiteSpace = 'normal';
+  }
+}
+
+let fitWordmarkResizeTimer;
+window.addEventListener('resize', ()=>{
+  clearTimeout(fitWordmarkResizeTimer);
+  fitWordmarkResizeTimer = setTimeout(fitWordmark, 150);
+});
 
 /* ---------- Settings drawer ---------- */
 
